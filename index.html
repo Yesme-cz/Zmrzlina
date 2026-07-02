@@ -615,6 +615,17 @@
   }
   .breakdown span{ color:var(--ink); font-weight:600; }
   .verdict button{ width:100%; }
+  /* výherní kód (jen při 100 %) – malé písmo dole v okně */
+  .wincode{
+    display:none;
+    margin-top:12px;
+    font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size:11px; letter-spacing:2px;
+    color:#8b93a6; text-align:center;
+    user-select:all;
+  }
+  .wincode.show{ display:block; }
+  .wincode b{ color:var(--mint-dark); font-weight:700; letter-spacing:2px; }
   footer{ height:14px; }
 
   @media (prefers-reduced-motion:reduce){
@@ -710,6 +721,7 @@
       <div class="congrats" id="congrats"></div>
       <div class="breakdown" id="breakdown"></div>
       <button class="btn-apply" id="againBtn">Zkusit znovu</button>
+      <div class="wincode" id="wincode" aria-live="polite"></div>
     </div>
   </div>
 
@@ -726,6 +738,7 @@
   const resetBtn= document.getElementById('resetBtn');
   const verdict = document.getElementById('verdict');
   const againBtn= document.getElementById('againBtn');
+  const wincode = document.getElementById('wincode');
   const attemptsEl = document.getElementById('attempts');
   const bestEl  = document.getElementById('best');
   const timeEl  = document.getElementById('time');
@@ -1076,6 +1089,17 @@
     return { posErr, angErr };
   }
 
+  // náhodný kód z velkých písmen a číslic (bez matoucích 0/O/1/I)
+  function makeWinCode(len){
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let out = '';
+    const rnd = (n) => (window.crypto && crypto.getRandomValues)
+      ? crypto.getRandomValues(new Uint32Array(1))[0] % n
+      : Math.floor(Math.random() * n);
+    for(let i=0;i<len;i++) out += chars[rnd(chars.length)];
+    return out;
+  }
+
   function apply(){
     if(state.applied) return;
     stopTimer();
@@ -1126,10 +1150,15 @@
     if(pct >= 100){
       congratsEl.innerHTML = 'NAPROSTÁ DOKONALOST! 🎉<br>Pixel na pixel, nula stupňů náklonu.<br>Radek mlčí. Legenda mezi etiketáři! 🏆🍦✨';
       congratsEl.classList.add('show');
+      // unikátní náhodný 10místný kód (písmena + čísla)
+      wincode.innerHTML = 'Tvůj kód: <b>' + makeWinCode(10) + '</b>';
+      wincode.classList.add('show');
       setTimeout(showRadekVictory, 5000);   // za 5 s vyjede Radek zleva: „Jsi bůh!"
     } else {
       congratsEl.classList.remove('show');
       congratsEl.textContent = '';
+      wincode.classList.remove('show');
+      wincode.textContent = '';
     }
     document.getElementById('breakdown').innerHTML =
       `Posun od středu: <span>${posErr.toFixed(1)} px</span><br>` +
