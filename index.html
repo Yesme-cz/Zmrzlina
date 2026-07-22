@@ -677,6 +677,15 @@
   @media (prefers-reduced-motion:reduce){
     *{ transition:none !important; }
   }
+  .win-share{ display:inline-block; margin:0 auto; text-align:center;
+    padding:12px 16px; border:2px solid #d62828; border-radius:14px;
+    background:rgba(214,40,40,.06); color:#d62828; }
+  .win-share .code-line{ font-family:var(--display); font-weight:700;
+    font-size:15px; letter-spacing:1px; color:#d62828; }
+  .win-share .code-line b{ color:#d62828; letter-spacing:2px; }
+  .share-hint{ margin-top:6px; font-family:var(--display); font-weight:700;
+    font-size:14px; line-height:1.35; color:#d62828; letter-spacing:.3px; }
+  .share-hint b{ color:#d62828; }
 </style>
 </head>
 <body>
@@ -1176,8 +1185,8 @@
     const { posErr, angErr } = currentErrors();
     let score = 100 - posErr*KP - angErr*KA;
     score = Math.max(0, Math.min(100, score));
-    // 100 % když zaokrouhlený odečet (jak ho vidíš) je do 0,5 px posun a 0,1° náklon
-    const perfect = Math.round(posErr*10)/10 <= 0.5 && Math.round(angErr*10)/10 <= 0.1;
+    // 100 % když zaokrouhlený odečet (jak ho vidíš) je do 0,7 px posun a 0,1° náklon
+    const perfect = Math.round(posErr*10)/10 <= 0.7 && Math.round(angErr*10)/10 <= 0.1;
     const pct = perfect ? 100 : Math.floor(score);
     // hodnota na 1 desetinné místo pro zobrazení (např. 99,3 %)
     const pctShown = perfect ? 100 : Math.round(score*10)/10;
@@ -1221,7 +1230,7 @@
       congratsEl.innerHTML = 'NAPROSTÁ DOKONALOST! 🎉<br>Pixel na pixel, nula stupňů náklonu.<br>Radek mlčí. Legenda mezi etiketáři! 🏆🍦✨';
       congratsEl.classList.add('show');
       // unikátní náhodný 10místný kód (písmena + čísla)
-      wincode.innerHTML = 'Tvůj kód: <b>' + makeWinCode(10) + '</b>';
+      wincode.innerHTML = '<div class="win-share">' + '<div class="code-line">Tvůj kód: <b>' + makeWinCode(10) + '</b></div>' + '<div class="share-hint">Sdílej tuto výhru ve stories a označ <b>@yesme_cz</b>, a my ti pošleme překvapení \uD83C\uDF81</div>' + '</div>';
       wincode.classList.add('show');
       setTimeout(showRadekVictory, 5000);   // za 5 s vyjede Radek zleva: „Jsi bůh!"
     } else {
